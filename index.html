@@ -1,329 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EduEvents — Student Registration Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Student Event Dashboard</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-
-  <style>
-    :root {
-      --ink: #0f0e17;
-      --cream: #fffcf5;
-      --accent: #e8572a;
-      --accent2: #3b82f6;
-      --muted: #6b7280;
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background-color: var(--cream);
-      color: var(--ink);
-    }
-    h1, h2, h3, .heading { font-family: 'Syne', sans-serif; }
-
-    .hero-bg {
-      background: #0f0e17;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-bg::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
-      background-size: 200px 200px;
-      opacity: 0.4;
-      pointer-events: none;
-    }
-    .hero-blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.18;
-    }
-
-    .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
-    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
-
-    .event-card {
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: 1.5px solid #e5e7eb;
-    }
-    .event-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.09);
-      border-color: var(--accent);
-    }
-
-    .badge {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 3px 10px;
-      border-radius: 999px;
-    }
-
-    .seat-bar-track { height: 6px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
-    .seat-bar-fill  { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
-
-   
-    .btn-register {
-      background: var(--ink);
-      color: #fff;
-      font-family: 'Syne', sans-serif;
-      font-weight: 600;
-      font-size: 0.8rem;
-      letter-spacing: 0.04em;
-      padding: 8px 18px;
-      border-radius: 8px;
-      transition: background 0.2s, transform 0.1s;
-      border: none;
-      cursor: pointer;
-    }
-    .btn-register:hover:not(:disabled) { background: var(--accent); transform: scale(1.03); }
-    .btn-register:disabled { background: #d1d5db; cursor: not-allowed; }
-
-    .btn-cancel {
-      background: transparent;
-      color: var(--muted);
-      font-family: 'Syne', sans-serif;
-      font-weight: 600;
-      font-size: 0.8rem;
-      padding: 8px 18px;
-      border-radius: 8px;
-      border: 1.5px solid #d1d5db;
-      transition: border-color 0.2s, color 0.2s, transform 0.1s;
-      cursor: pointer;
-    }
-    .btn-cancel:hover:not(:disabled) { border-color: #ef4444; color: #ef4444; transform: scale(1.03); }
-    .btn-cancel:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .form-input {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1.5px solid #d1d5db;
-      border-radius: 10px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      background: #fff;
-    }
-    .form-input:focus {
-      border-color: var(--ink);
-      box-shadow: 0 0 0 3px rgba(15,14,23,0.08);
-    }
-
-   
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255,252,245,0.88);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .search-wrap { position: relative; }
-    .search-wrap svg {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 16px;
-      height: 16px;
-      color: #9ca3af;
-    }
-    .search-input {
-      padding: 8px 14px 8px 36px;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 999px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s, width 0.3s;
-      width: 200px;
-    }
-    .search-input:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(15,14,23,0.07); width: 240px; }
-
-    .empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
-    .empty-state svg { margin: 0 auto 12px; opacity: 0.4; }
-
-    #toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 9999;
-      background: var(--ink);
-      color: #fff;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.85rem;
-      padding: 12px 20px;
-      border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-      transform: translateY(60px);
-      opacity: 0;
-      transition: transform 0.3s, opacity 0.3s;
-      pointer-events: none;
-    }
-    #toast.show { transform: translateY(0); opacity: 1; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .event-card { animation: fadeUp 0.35s ease both; }
-
-    .field-error { color: #ef4444; font-size: 0.78rem; margin-top: 3px; display: none; }
-    .field-error.show { display: block; }
-  </style>
 </head>
-<body>
 
+<body class="bg-gray-100">
 
-<div id="toast"></div>
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow sticky top-0 z-50">
 
-<!-- ======== NAVBAR ======== -->
-<nav class="navbar px-4 sm:px-8 py-3 flex items-center justify-between">
-  <div class="flex items-center gap-3">
-    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:var(--ink)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-        <path d="M2 17l10 5 10-5"/>
-        <path d="M2 12l10 5 10-5"/>
-      </svg>
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+      <h1 class="text-2xl font-bold">
+        EduEvents
+      </h1>
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search events..."
+        class="border border-gray-300 rounded-lg px-4 py-2 outline-none focus:border-blue-500 md:w-64 w-full ml-4"
+      >
+
     </div>
-    <span class="font-extrabold text-lg tracking-tight" style="font-family:'Syne',sans-serif">EduEvents</span>
-  </div>
 
-  <div class="flex items-center gap-3 sm:gap-5">
-    <!-- Desktop Search -->
-    <div class="search-wrap hidden sm:block">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-      <input id="searchInput" class="search-input" type="text" placeholder="Search events…" />
-    </div>
-    <a href="#add-event" class="btn-register hidden sm:inline-flex items-center gap-1 text-sm">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-        <path d="M12 5v14M5 12h14"/>
-      </svg>
-      Add Event
-    </a>
-  </div>
-</nav>
+  </nav>
 
-<!-- ======== HERO ======== -->
-<section class="hero-bg py-20 px-6 text-center relative">
-  <div class="hero-blob w-72 h-72 top-[-40px] left-[-60px]" style="background:#e8572a"></div>
-  <div class="hero-blob w-56 h-56 bottom-[-20px] right-[-40px]" style="background:#3b82f6"></div>
-  <div class="relative z-10 max-w-2xl mx-auto">
-    <span class="badge inline-block mb-4" style="background:rgba(232,87,42,0.15);color:#e8572a">Student Portal</span>
-    <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight mb-4" style="font-family:'Syne',sans-serif">
-      Discover & Register<br/>School Events
-    </h1>
-    <p class="text-gray-400 text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
-      Browse all available campus events, secure your spot, and manage your registrations — all in one place.
+
+
+  <!-- HERO SECTION -->
+  <section class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-20 text-center">
+
+    <h2 class="text-4xl md:text-5xl font-bold mb-4">
+      Student Event Registration
+    </h2>
+
+    <p class="max-w-2xl mx-auto text-lg">
+      Register for school events, manage seats, and track participation easily.
     </p>
-  </div>
-</section>
 
-<!-- ======== STATS ======== -->
-<section class="max-w-5xl mx-auto px-4 sm:px-6 -mt-8 relative z-10">
-  <div class="grid grid-cols-3 gap-3 sm:gap-5">
-    <div class="stat-card bg-white rounded-2xl shadow-md p-4 sm:p-6 text-center">
-      <p class="text-xs sm:text-sm text-gray-400 mb-1 uppercase tracking-widest" style="font-family:'Syne',sans-serif">Total Events</p>
-      <p id="statTotal" class="text-3xl sm:text-4xl font-extrabold" style="font-family:'Syne',sans-serif;color:var(--ink)">0</p>
+  </section>
+
+
+
+  <!-- STATISTICS -->
+  <section class="max-w-6xl mx-auto px-6 py-10">
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+      <div class="bg-white rounded-xl shadow p-6 text-center">
+        <h3 class="text-gray-500 mb-2">
+          Total Events
+        </h3>
+
+        <p
+          id="totalEvents"
+          class="text-4xl font-bold"
+        >
+          0
+        </p>
+      </div>
+
+
+
+      <div class="bg-white rounded-xl shadow p-6 text-center">
+        <h3 class="text-gray-500 mb-2">
+          Registered Students
+        </h3>
+
+        <p
+          id="totalRegistered"
+          class="text-4xl font-bold text-blue-500"
+        >
+          0
+        </p>
+      </div>
+
+
+
+      <div class="bg-white rounded-xl shadow p-6 text-center">
+        <h3 class="text-gray-500 mb-2">
+          Remaining Seats
+        </h3>
+
+        <p
+          id="remainingSeats"
+          class="text-4xl font-bold text-green-500"
+        >
+          0
+        </p>
+      </div>
+
     </div>
-    <div class="stat-card bg-white rounded-2xl shadow-md p-4 sm:p-6 text-center">
-      <p class="text-xs sm:text-sm text-gray-400 mb-1 uppercase tracking-widest" style="font-family:'Syne',sans-serif">Registered</p>
-      <p id="statRegistered" class="text-3xl sm:text-4xl font-extrabold" style="font-family:'Syne',sans-serif;color:var(--accent)">0</p>
+
+  </section>
+
+
+
+  <!-- EVENTS -->
+  <section class="max-w-6xl mx-auto px-6 pb-10">
+
+    <div class="flex justify-between items-center mb-6">
+
+      <h2 class="text-3xl font-bold">
+        Available Events
+      </h2>
+
     </div>
-    <div class="stat-card bg-white rounded-2xl shadow-md p-4 sm:p-6 text-center">
-      <p class="text-xs sm:text-sm text-gray-400 mb-1 uppercase tracking-widest" style="font-family:'Syne',sans-serif">Seats Left</p>
-      <p id="statSeats" class="text-3xl sm:text-4xl font-extrabold" style="font-family:'Syne',sans-serif;color:var(--accent2)">0</p>
+
+
+
+    <div
+      id="eventsContainer"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+    >
     </div>
-  </div>
-</section>
 
-<!-- ======== MOBILE SEARCH ======== -->
-<div class="sm:hidden max-w-5xl mx-auto px-4 mt-6">
-  <div class="search-wrap w-full">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-      style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#9ca3af">
-      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-    </svg>
-    <input id="searchInputMobile" class="search-input" style="width:100%;border-radius:12px;" type="text" placeholder="Search events…" />
-  </div>
-</div>
+  </section>
 
-<!-- ======== EVENTS GRID ======== -->
-<section class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-  <div class="flex items-center justify-between mb-6">
-    <h2 class="text-xl font-bold" style="font-family:'Syne',sans-serif">Available Events</h2>
-    <span id="eventCount" class="text-sm text-gray-400"></span>
-  </div>
-  <div id="eventsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-</section>
 
-<!-- ======== ADD EVENT FORM ======== -->
-<section id="add-event" class="max-w-5xl mx-auto px-4 sm:px-6 pb-20">
-  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
-    <h2 class="text-xl font-bold mb-1" style="font-family:'Syne',sans-serif">Add New Event</h2>
-    <p class="text-sm text-gray-400 mb-6">Fill in the details below to create a new event.</p>
 
-    <form id="addEventForm" novalidate>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+  <!-- ADD EVENT FORM -->
+  <section class="max-w-4xl mx-auto px-6 pb-20">
+
+    <div class="bg-white rounded-xl shadow p-8">
+
+      <h2 class="text-3xl font-bold mb-6">
+        Add New Event
+      </h2>
+
+
+
+      <form id="eventForm" class="space-y-5">
+
+        <!-- TITLE -->
         <div>
-          <label class="block text-sm font-medium mb-1" style="font-family:'Syne',sans-serif">Event Title</label>
-          <input id="eventTitle" class="form-input" type="text" placeholder="e.g. AI Bootcamp" />
-          <p class="field-error" id="errTitle">Please enter an event title.</p>
+
+          <label class="block mb-2 font-semibold">
+            Event Title
+          </label>
+
+          <input
+            type="text"
+            id="title"
+            class="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-blue-500"
+            placeholder="Enter event title"
+          >
+
         </div>
+
+
+
+        <!-- CATEGORY -->
         <div>
-          <label class="block text-sm font-medium mb-1" style="font-family:'Syne',sans-serif">Category</label>
-          <select id="eventCategory" class="form-input">
-            <option value="">— Select category —</option>
+
+          <label class="block mb-2 font-semibold">
+            Category
+          </label>
+
+          <select
+            id="category"
+            class="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-blue-500"
+          >
+
+            <option value="">Select category</option>
             <option>Technology</option>
             <option>Science</option>
-            <option>Arts</option>
             <option>Sports</option>
+            <option>Arts</option>
             <option>Business</option>
-            <option>Health</option>
-            <option>Other</option>
+
           </select>
-          <p class="field-error" id="errCategory">Please select a category.</p>
+
         </div>
+
+
+
+        <!-- SEATS -->
         <div>
-          <label class="block text-sm font-medium mb-1" style="font-family:'Syne',sans-serif">Number of Seats</label>
-          <input id="eventSeats" class="form-input" type="number" min="1" placeholder="e.g. 30" />
-          <p class="field-error" id="errSeats">Please enter a valid seat count (≥ 1).</p>
-        </div>
-        <div class="flex items-end">
-          <button type="submit" class="btn-register w-full py-3 text-sm flex items-center justify-center gap-2">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
-            Create Event
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
-</section>
 
-<!-- ======== FOOTER ======== -->
-<footer class="text-center text-xs text-gray-400 pb-8" style="font-family:'Syne',sans-serif">
- Student Registration POrtal
- 
-</footer>
+          <label class="block mb-2 font-semibold">
+            Number of Seats
+          </label>
 
-<!-- ✅ JavaScript file yitandukanya -->
-<script src="Student.js"></script>
+          <input
+            type="number"
+            id="seats"
+            class="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-blue-500"
+            placeholder="Enter number of seats"
+          >
+
+        </div>
+
+
+
+        <!-- BUTTON -->
+        <button
+          type="submit"
+          class="bg-black text-white px-6 py-3 rounded-lg hover:bg-blue-500 transition"
+        >
+          Add Event
+        </button>
+
+      </form>
+
+    </div>
+
+  </section>
+
+
+
+  <script src="Student.js"></script>
 
 </body>
 </html>
